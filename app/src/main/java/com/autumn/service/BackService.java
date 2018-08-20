@@ -4,8 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
-
-import com.autumn.bookandroid.MyApplication;
 import com.autumn.listener.MyLocationListener;
 import com.autumn.tools.NoticeTool;
 import com.baidu.location.LocationClient;
@@ -19,14 +17,19 @@ public class BackService extends Service{
 	public void onCreate() {
 
 		super.onCreate();
+        //创建启动地图Service的Intent
+        /*final Intent intent = new Intent(this, BackService.class);
+        startService(intent);*/
+        //创建监听消息服务
 		Intent intent1=new Intent(this, NotificationMonitorService.class);
 		intent1.setAction("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
 		startService(intent1);   //启动服务
-		Log.e("service", "onCreate执行");
+		Log.e("BackService", "onCreate执行");
 	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.e("BackService", "onStartCommand执行");
 		mLocationClient = new LocationClient(getApplicationContext());
 		//声明LocationClient类
 		mLocationClient.registerLocationListener(myListener);
@@ -46,7 +49,7 @@ public class BackService extends Service{
 		//bd09：百度墨卡托坐标；
 		//海外地区定位，无需设置坐标类型，统一返回wgs84类型坐标
 
-		option.setScanSpan(1000*5);
+		option.setScanSpan(1000*10*60);
 		//可选，设置发起定位请求的间隔，int类型，单位ms
 		//如果设置为0，则代表单次定位，即仅定位一次，默认为0
 		//如果设置非0，需设置1000ms以上才有效
@@ -58,7 +61,7 @@ public class BackService extends Service{
 		option.setLocationNotify(true);
 		//可选，设置是否当GPS有效时按照1S/1次频率输出GPS结果，默认false
 
-		option.setIgnoreKillProcess(false);
+		option.setIgnoreKillProcess(true);
 		//可选，定位SDK内部是一个service，并放到了独立进程。
 		//设置是否在stop的时候杀死这个进程，默认（建议）不杀死，即setIgnoreKillProcess(true)
 
@@ -94,14 +97,15 @@ public class BackService extends Service{
 		Intent intent1=new Intent(this, NotificationMonitorService.class);
 		intent1.setAction("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
 		startService(intent1);   //启动服务
-		Log.e("service", "onStartCommand执行");
-		return super.onStartCommand(intent1, flags, startId);
+		//return super.onStartCommand(intent1, flags, startId);
+        return START_REDELIVER_INTENT;  //返回START_REDELIVER_INTENT表示service被杀死后会自启
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
         NoticeTool.sendToast("百度SDK关闭");
+        Log.e("BackService", "onDestroy执行");
 	}
 
 	@Override

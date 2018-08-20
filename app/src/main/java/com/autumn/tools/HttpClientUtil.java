@@ -86,9 +86,9 @@ public class HttpClientUtil {
 
 	/**
 	 * 安卓使用放入data:json格式的对象
-	 * @param data
+	 * @param jsonData
 	 */
-	public static void postAndroid(final String url,final String data) {
+	public static void postAndroid(final String url,final String jsonData) {
 		Runnable runnable = new Runnable() {
 			public void run() {
 
@@ -107,7 +107,7 @@ public class HttpClientUtil {
 
 				// 添加参数
 				List<NameValuePair> params = new ArrayList<NameValuePair>();
-				params.add(new BasicNameValuePair("data", data));
+				params.add(new BasicNameValuePair("data", jsonData));
 
 				// CloseableHttpResponse response = null;   使用会与android核心包起冲突
 				HttpResponse response = null;
@@ -115,6 +115,7 @@ public class HttpClientUtil {
 				try {
 					httpPost.setEntity(new UrlEncodedFormEntity(params, "UTF-8"));
 					response = httpclient.execute(httpPost);
+
 				} catch (UnsupportedEncodingException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -133,9 +134,9 @@ public class HttpClientUtil {
 	/**
 	 * 安卓使用放Http发送对象
 	 * @param url   对象
-	 * @param data  Object对象中的每一个字段作为参数,值作为参数值
+	 * @param objData  Object对象中的每一个字段作为参数,值作为参数值
 	 */
-	public static void postObjectAndroid(final String url,final Object data) {
+	public static void postObjectAndroid(final String url,final Object objData) {
 		Runnable runnable = new Runnable() {
 			public void run() {
 
@@ -154,13 +155,13 @@ public class HttpClientUtil {
 
 				// 添加参数
 				List<NameValuePair> params = new ArrayList<NameValuePair>();
-				Class dataClass = data.getClass();
+				Class dataClass = objData.getClass();
 				Field[] declaredFields = dataClass.getDeclaredFields();
 				for (Field field:declaredFields){
 					try {
 						field.setAccessible(true);
-						if(field.get(data)!=null){   //字段值不为null,则作为参数
-							params.add(new BasicNameValuePair(field.getName(),field.get(data).toString()));
+						if(field.get(objData)!=null){   //字段值不为null,则作为参数
+							params.add(new BasicNameValuePair(field.getName(),field.get(objData).toString()));
 						}
 					} catch (IllegalAccessException e) {
 						e.printStackTrace();

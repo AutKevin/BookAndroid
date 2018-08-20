@@ -64,6 +64,7 @@ public class NotificationMonitorService extends android.service.notification.Not
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.e("NotificationMonitor", "onDestroy执行");
         Intent intent1=new Intent(MyApplication.getContextObject(), NotificationMonitorService.class);
         intent1.setAction("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
         MyApplication.getContextObject().startService(intent1);  //启动监听服务

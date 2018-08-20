@@ -34,10 +34,10 @@ public class MainActivity extends AppCompatActivity {
 
 
         //创建启动地图Service的Intent
-        final Intent intent = new Intent(MainActivity.this, BackService.class);
+        final Intent intent = new Intent(MyApplication.getContextObject(), BackService.class);
         startService(intent);
 
-        Intent intent_listener=new Intent(this, NotificationMonitorService.class);
+        Intent intent_listener=new Intent(MyApplication.getContextObject(), NotificationMonitorService.class);
         intent_listener.setAction("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
         startService(intent_listener);  //启动监听后台服务
 
