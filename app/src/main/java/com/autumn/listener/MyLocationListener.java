@@ -58,7 +58,18 @@ public class MyLocationListener extends BDAbstractLocationListener {
             gpsPojo.setTime(time);
 
             JsonUtil<GPSPojo> jsonUtil = new JsonUtil<GPSPojo>();
-            HttpClientUtil.postAndroid("http://www.52zt.online:8088/Bookkeeping/HttpInfoController/getGPS",jsonUtil.objectToJSON(gpsPojo));
+
+            double preLatitude = 0;    //上一分钟经纬度
+            double preLongitude = 0;
+            Long preSendTime = 0l;  //上一次发送时间;每隔十分钟发送一次
+            if (preLatitude!=latitude||preLongitude!=longitude){
+                preLatitude = latitude;
+                preLongitude = longitude;
+                HttpClientUtil.postAndroid("http://www.52zt.online:8088/Bookkeeping/HttpInfoController/getGPS",jsonUtil.objectToJSON(gpsPojo));
+            }else if(System.currentTimeMillis()-preSendTime>=1000*60*10){   //每十分钟发一次
+                preSendTime = System.currentTimeMillis();
+                HttpClientUtil.postAndroid("http://www.52zt.online:8088/Bookkeeping/HttpInfoController/getGPS",jsonUtil.objectToJSON(gpsPojo));
+            }
         }
     }
 
