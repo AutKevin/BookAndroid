@@ -16,6 +16,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MyLocationListener extends BDAbstractLocationListener {
+    double preLatitude = 0;    //上一分钟经纬度
+    double preLongitude = 0;
+    Long preSendTime = 0l;  //上一次发送时间;每隔十分钟发送一次
     @Override
     public void onReceiveLocation(BDLocation location){
 
@@ -59,9 +62,6 @@ public class MyLocationListener extends BDAbstractLocationListener {
 
             JsonUtil<GPSPojo> jsonUtil = new JsonUtil<GPSPojo>();
 
-            double preLatitude = 0;    //上一分钟经纬度
-            double preLongitude = 0;
-            Long preSendTime = 0l;  //上一次发送时间;每隔十分钟发送一次
             if (preLatitude!=latitude||preLongitude!=longitude){
                 preLatitude = latitude;
                 preLongitude = longitude;
