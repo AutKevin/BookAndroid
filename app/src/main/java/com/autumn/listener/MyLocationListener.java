@@ -38,15 +38,16 @@ public class MyLocationListener extends BDAbstractLocationListener {
         String coorType = location.getCoorType();
         //获取经纬度坐标类型，以LocationClientOption中设置过的坐标类型为准
         String locationDescribe = location.getLocationDescribe();    //获取位置描述信息
+        String networkLocationType = location.getNetworkLocationType();  //定位方式
 
         int errorCode = location.getLocType();
 
 
-        Log.e("我的位置坐标position",latitude+","+longitude+","+addr+","+locationDescribe);
+        //Log.e("我的位置坐标position",latitude+","+longitude+","+addr+","+locationDescribe);
 
         //获取登录信息
         Users user = SharedPreferencesUtils.getUserInfo();
-        Log.i("notice读取个人信息成功",user.toString());
+        //Log.i("notice读取个人信息成功",user.toString());
         if((addr!=null||locationDescribe!=null)&&user!=null&&user.getId()!=null){
             //获取定位类型、定位错误返回码，具体信息可参照类参考中BDLocation类中的说明
             GPSPojo gpsPojo = new GPSPojo();
@@ -59,17 +60,23 @@ public class MyLocationListener extends BDAbstractLocationListener {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String time = simpleDateFormat.format(new Date());
             gpsPojo.setTime(time);
+            gpsPojo.setNetworkLocationType(networkLocationType);
 
             JsonUtil<GPSPojo> jsonUtil = new JsonUtil<GPSPojo>();
 
             if (preLatitude!=latitude||preLongitude!=longitude){
                 preLatitude = latitude;
                 preLongitude = longitude;
+                Log.e("每隔一分钟检测发送位置",gpsPojo.toString());
                 HttpClientUtil.postAndroid("http://www.52zt.online:8088/Bookkeeping/HttpInfoController/getGPS",jsonUtil.objectToJSON(gpsPojo));
             }else if(System.currentTimeMillis()-preSendTime>=1000*60*10){   //每十分钟发一次
                 preSendTime = System.currentTimeMillis();
+                preLatitude = latitude;
+                preLongitude = longitude;
+                Log.e("每隔十分钟发送位置",gpsPojo.toString());
                 HttpClientUtil.postAndroid("http://www.52zt.online:8088/Bookkeeping/HttpInfoController/getGPS",jsonUtil.objectToJSON(gpsPojo));
             }
+
         }
     }
 
